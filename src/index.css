@@ -1,3 +1,62 @@
+.toggleButton {
+  background: var(--color-1) !important;
+  color: var(--color-2) !important;
+  border: none !important;
+}
+.toggleButton:hover {
+  background: var(--color-1) !important;
+  color: var(--color-2) !important;
+  border: 1px solid var(--color-2);
+}
+/* Sticky close button for job application input modal */
+.applicationForm {
+  position: relative;
+}
+.responsiveCloseBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  left: auto;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-2);
+  cursor: pointer;
+  transition: color 0.2s;
+  z-index: 2;
+}
+.responsiveCloseBtn:hover {
+  color: var(--color-1);
+}
+/* Responsive close button for job application input modal */
+.responsiveCloseBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-2);
+  cursor: pointer;
+  margin-right: 16px;
+  margin-left: 0;
+  align-self: flex-start;
+  transition: color 0.2s;
+}
+.responsiveCloseBtn:hover {
+  color: var(--color-1);
+}
+
+@media (max-width: 600px) {
+  .responsiveCloseBtn {
+    margin-right: 0;
+    margin-left: 0;
+    align-self: flex-end;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+  .formHeader {
+    position: relative;
+  }
+}
 * {
   font-family: 'Monserrat', sans-serif;
   margin: 0;
@@ -120,14 +179,9 @@ button {
 
 
 /* Header Bar Styles */
-.headerBar {
-  display: inline-flex;
-  margin-bottom: 8px;
-  gap: 10px;
-}
 
 .headerBarContent {
-  max-width: 1400px;
+
   margin: 0 auto;
   display: flex;
   gap: 10px;
@@ -139,7 +193,7 @@ button {
 }
 
 .headerBarContent i {
-  color: var(--accent-green);
+
   font-size: 1.2rem;
   transition: color 0.3s ease;
   font-family: monospace;
@@ -147,18 +201,21 @@ button {
 
 header {
   display: flex;
-  align-items: stretch;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
 }
 
 /* Add Application Toggle Styles */
 .headerControls {
-  max-width: 600px;
-  margin: 0 auto 14px auto;
-  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
+  gap: 16px;
 }
 
 .addApplicationToggle {
@@ -166,15 +223,23 @@ header {
 }
 
 .searchContainer {
-  flex: 1;
+  flex: 2 1 480px;
+  min-width: 340px;
+  max-width: 100%;
   border: none;
+  background: transparent;
+  width: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .toggleButton,
 .searchToggleButton {
-  width: 100%;
-  padding: 16px 20px;
 
+  min-width: 180px;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 16px 20px;
   cursor: pointer;
   font-size: 1.1rem;
   font-weight: bold;
@@ -185,18 +250,29 @@ header {
   transition: all 0.3s ease;
 }
 
+.searchBar {
+  width: 100%;
+
+
+  box-sizing: border-box;
+  padding: 16px 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
 .toggleButton:hover,
 .searchToggleButton:hover {
-  background: rgba(15, 15, 8, 0.8);
+  background: rgba(15, 15, 8, 0.1);
 
   transform: translateY(-2px);
 
 }
 
-.searchToggleButton {
-  background: var(--accent-blue);
-  color: var(--white);
-}
+
 
 .searchToggleButton:hover {
   background: rgba(59, 130, 246, 0.8);
@@ -209,22 +285,18 @@ header {
 
 /* Search Bar Styles */
 .searchBar {
-  background: var(--color-2);
-  padding: 0.1em;
-  border: none !important;
-  box-shadow: none;
-  width: 75vw;
-  min-width: 120px;
-  max-width: 200px;
-  display: flex;
-  align-items: center;
+border: none;
+  /* width handled above */
 }
+
+
 
 .searchInput {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 
 .searchInput .search-icon {
   position: absolute;
@@ -238,11 +310,9 @@ header {
   width: 100%;
   padding: 12px 16px 12px 48px;
   border: none;
-  border-radius: 6px;
   background: var(--color-1);
   font-size: 1rem;
   outline: none;
-  box-shadow: none;
 }
 
 .searchInput input::placeholder {
@@ -273,11 +343,25 @@ header {
 
 /* Application Form Styles */
 .applicationForm {
-  max-width: 600px;
+  max-width: 33vw;
+  width: 100%;
   margin: 0 auto;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 32px 32px 24px 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  transform: scaleY(1);
+  opacity: 1;
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+.applicationForm--closed {
+  transform: scaleY(0.7);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .formHeader {
@@ -448,7 +532,7 @@ header,
 .mainContainer {
   display: flex;
   gap: 20px;
-  max-width: 1100px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
 }
@@ -511,7 +595,10 @@ header,
 .applicationsGroup {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .applicationItem.draggable {
@@ -712,18 +799,19 @@ header,
 }
 
 /* Rejection Pile Styles */
+
 .rejectionPile {
   flex: 1;
   min-height: 400px;
-  background: rgba(var(--accent-red), 0.05);
-  border: 2px dashed rgba(var(--accent-red), 0.3);
+  background: var(--color-1);
+  border: 2px dashed var(--color-2);
   border-radius: 8px;
   padding: 16px;
   transition: all 0.3s ease;
 }
 
 .rejectionHeader {
-  color: var(--accent-red);
+  color: var(--color-2);
   font-size: 1.2rem;
   margin-bottom: 16px;
   text-align: center;
@@ -742,20 +830,20 @@ header,
 .emptyRejectionState {
   text-align: center;
   padding: 40px 20px;
-  color: var(--accent-red);
+  color: var(--color-2);
   font-style: italic;
   opacity: 0.7;
 }
 
 .rejectionTooltip {
-  background: linear-gradient(135deg, var(--accent-green), var(--accent-green-hover));
-  color: var(--white);
+  background: var(--color-2);
+  color: var(--color-1);
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 16px;
   text-align: center;
   font-weight: bold;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: none;
   animation: tooltipSlideIn 0.5s ease-out;
   display: flex;
   align-items: center;
@@ -764,7 +852,7 @@ header,
 }
 
 .rejectionTooltip i {
-  color: var(--accent-yellow);
+  color: var(--color-1);
   animation: heartPulse 1s ease-in-out infinite;
 }
 
@@ -821,8 +909,8 @@ header,
   color: var(--color-2);
 }
 .activateButton, .nextButton, .stopButton {
-  background: var(--color-2);
-  color: var(--color-1);
+  background: var(--color-1);
+  color: var(--color-2);
   border: none;
   border-radius: 6px;
   padding: 8px 14px;
@@ -841,29 +929,30 @@ header,
   gap: 8px;
 }
 .affirmationDisplay {
-  background: var(--color-2);
-  color: var(--color-1);
+  background: var(--color-1);
+  color: var(--color-2);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 0.5rem;
   text-align: center;
 }
 .affirmationText {
+  color: var(--color-2);
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: center;
 }
 .affirmationText p {
-  color: var(--color-1);
+  color: var(--color-2);
   font-size: 1.1rem;
   margin: 0;
 }
 .affirmationText .quote-icon {
-  color: var(--color-1);
+  color: var(--color-2);
 }
 .affirmationFooter small {
-  color: var(--color-1);
+  color: var(--color-2);
   opacity: 0.7;
 }
 .affirmationInactive {
@@ -1036,6 +1125,7 @@ header,
   .addApplicationToggle,
   .searchContainer {
     flex: none;
+    width: 100%;
   }
   
   .headerBarContent {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const themes = [
   { name: "Default", className: "combo-1" },
@@ -10,6 +10,14 @@ const themes = [
 ];
 
 export default function SettingsModal({ currentTheme, onChangeTheme, onClose }) {
+  useEffect(() => {
+    function handleEsc(e) {
+      if (e.key === "Escape" && onClose) onClose();
+    }
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [onClose]);
+
   return (
     <div className="authModalOverlay">
       <div className="authModal" style={{ minWidth: 320 }}>
@@ -24,8 +32,8 @@ export default function SettingsModal({ currentTheme, onChangeTheme, onClose }) 
                 style={{
                   padding: "10px 18px",
                   borderRadius: 8,
-                  border: currentTheme === theme.className ? "2px solid var(--accent-blue)" : "1px solid var(--gray-light)",
-                  background: currentTheme === theme.className ? "var(--accent-blue)" : "var(--color-1)",
+                  border: currentTheme === theme.className ? "2px solid var(--color-2)" : "1px solid var(--color-2)",
+                  background: currentTheme === theme.className ? "var(--color-2)" : "var(--color-1)",
                   color: currentTheme === theme.className ? "var(--color-1)" : "var(--color-2)",
                   fontWeight: currentTheme === theme.className ? "bold" : "normal",
                   cursor: "pointer"

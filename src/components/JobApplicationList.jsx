@@ -1,7 +1,17 @@
 import React from "react";
 import JobApplicationItem from "./JobApplicationItem";
+import JobApplicationInput from "./JobApplicationInput";
+import { useState } from "react";
 
-export default function JobApplicationList({ applications, handleUpdateApplication, handleDeleteApplication }) {
+export default function JobApplicationList({ applications, handleUpdateApplication, handleDeleteApplication, handleAddApplication }) {
+    const [applicationData, setApplicationData] = useState({
+        company: "",
+        position: "",
+        status: "applying",
+        source: "",
+        notes: "",
+        labels: []
+    });
     // Filter out rejected applications
     const activeApplications = applications.filter(app => app.status !== 'rejected');
     
@@ -35,6 +45,12 @@ export default function JobApplicationList({ applications, handleUpdateApplicati
 
     return (
         <div className="main">
+            <JobApplicationInput
+                handleAddApplication={handleAddApplication}
+                applicationData={applicationData}
+                setApplicationData={setApplicationData}
+                applications={applications}
+            />
             {sortedDates.map(date => (
                 <div key={date} className="dateGroup">
                     <h2 className="dateHeader">{formatDate(date)}</h2>

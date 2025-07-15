@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import LabelsInput from "./LabelsInput";
 
 export default function JobApplicationInput(props) {
     const { handleAddApplication, applicationData, setApplicationData, applications, onSearchResults } = props;
     const [showForm, setShowForm] = useState(false);
+
+    useEffect(() => {
+        if (!showForm) return;
+        function handleEsc(e) {
+            if (e.key === "Escape") setShowForm(false);
+        }
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, [showForm]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -43,22 +52,22 @@ export default function JobApplicationInput(props) {
                             title="Add new job application"
                         >
                             <i className="fa-solid fa-plus"></i>
-                            <span>Add Job Application</span>
+                            <span>Add Application</span>
                         </button>
                     </div>
                 </div>
             ) : (
                 <form onSubmit={handleSubmit} className="applicationForm">
                     <div className="formHeader">
-                        <h3>Add New Job Application</h3>
                         <button 
                             type="button" 
-                            className="closeButton"
+                            className="authModalClose responsiveCloseBtn"
                             onClick={toggleForm}
-                            title="Close form"
+                            title="Close"
                         >
                             <i className="fa-solid fa-times"></i>
                         </button>
+                        <h3>Add New Job Application</h3>
                     </div>
                     <div className="formFields">
                         <input
