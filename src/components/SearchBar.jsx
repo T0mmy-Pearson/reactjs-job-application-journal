@@ -121,7 +121,7 @@ export default function SearchBar({ applications, onSearchResults }) {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => handleSearch(e.target.value)}
-                        placeholder="Search your applications..."
+                        placeholder="Search applications..."
                         autoFocus={false}
                     />
                     {searchTerm && (

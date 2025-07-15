@@ -17,6 +17,10 @@ import { defaultApplications } from "./components/SearchBar";
 function App() {
   const [user, loading] = useAuthState(auth);
   const [applications, setApplications] = useState(defaultApplications);
+  // Set app title to JJ
+  useEffect(() => {
+    document.title = "JJ";
+  }, []);
   // Application input state is now managed in Header
   const [isDragOverRejectPile, setIsDragOverRejectPile] = useState(false);
   const [searchResults, setSearchResults] = useState(null);

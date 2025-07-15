@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export default function AffirmationsPanel() {
-    const [isActive, setIsActive] = useState(false);
-    const [currentAffirmation, setCurrentAffirmation] = useState("");
-    const [intervalId, setIntervalId] = useState(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const intervalRef = useRef(null);
 
     const affirmations = [
         "You are capable of achieving great things in your career.",
@@ -38,94 +37,20 @@ export default function AffirmationsPanel() {
         "You are destined for professional success."
     ];
 
-    const getRandomAffirmation = () => {
-        const randomIndex = Math.floor(Math.random() * affirmations.length);
-        return affirmations[randomIndex];
-    };
-
-    const startAffirmations = () => {
-        setIsActive(true);
-        setCurrentAffirmation(getRandomAffirmation());
-        
-        const id = setInterval(() => {
-            setCurrentAffirmation(getRandomAffirmation());
-        }, 5000); // Change every 5 seconds
-        
-        setIntervalId(id);
-    };
-
-    const stopAffirmations = () => {
-        setIsActive(false);
-        setCurrentAffirmation("");
-        if (intervalId) {
-            clearInterval(intervalId);
-            setIntervalId(null);
-        }
-    };
-
-    const nextAffirmation = () => {
-        setCurrentAffirmation(getRandomAffirmation());
-    };
-
     useEffect(() => {
-        return () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        };
-    }, [intervalId]);
+        intervalRef.current = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % affirmations.length);
+        }, 5000);
+        return () => clearInterval(intervalRef.current);
+    }, [affirmations.length]);
 
     return (
-        <div className="affirmationsPanel">
-            <div className="affirmationsHeader">
-                <h2>
-                    <i className="fa-solid fa-heart"></i> Daily Affirmations
-                </h2>
-                {!isActive ? (
-                    <button 
-                        className="activateButton"
-                        onClick={startAffirmations}
-                    >
-                        <i className="fa-solid fa-play"></i> Activate Affirmations
-                    </button>
-                ) : (
-                    <div className="affirmationControls">
-                        <button 
-                            className="nextButton"
-                            onClick={nextAffirmation}
-                            title="Next affirmation"
-                        >
-                            <i className="fa-solid fa-forward"></i>
-                        </button>
-                        <button 
-                            className="stopButton"
-                            onClick={stopAffirmations}
-                            title="Stop affirmations"
-                        >
-                            <i className="fa-solid fa-stop"></i>
-                        </button>
-                    </div>
-                )}
+        <div className="affirmationsBanner">
+            <div className="affirmationsBanner-content">
+                <span className="affirmationsBanner-quote">&#10077;</span>
+                <span className="affirmationsBanner-text">{affirmations[currentIndex]}</span>
+                <span className="affirmationsBanner-quote">&#10078;</span>
             </div>
-            
-            {isActive && (
-                <div className="affirmationDisplay">
-                    <div className="affirmationText">
-                        <i className="fa-solid fa-quote-left quote-icon"></i>
-                        <p>{currentAffirmation}</p>
-                        <i className="fa-solid fa-quote-right quote-icon"></i>
-                    </div>
-                    <div className="affirmationFooter">
-                        <small>New affirmation every 5 seconds</small>
-                    </div>
-                </div>
-            )}
-            
-            {!isActive && (
-                <div className="affirmationInactive">
-                    <p>Click "Activate Affirmations" to start receiving positive reminders during your job search journey.</p>
-                </div>
-            )}
         </div>
     );
 }
