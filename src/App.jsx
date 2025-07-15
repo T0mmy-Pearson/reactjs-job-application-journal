@@ -12,14 +12,15 @@ import AuthForm from "./components/AuthForm";
 import { FaUser } from "react-icons/fa";
 import { signOut } from "firebase/auth";
 import SettingsModal from "./components/SettingsModal";
+import FeedbackForm from "./components/FeedbackForm";
 import { defaultApplications } from "./components/SearchBar";
 
 function App() {
   const [user, loading] = useAuthState(auth);
   const [applications, setApplications] = useState(defaultApplications);
-  // Set app title to JJ
+  // Set app title to JJonpm
   useEffect(() => {
-    document.title = "JJ";
+    document.title = "YourJobJournal";
   }, []);
   // Application input state is now managed in Header
   const [isDragOverRejectPile, setIsDragOverRejectPile] = useState(false);
@@ -30,6 +31,7 @@ function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "combo-1";
   });
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     document.body.className = theme;
@@ -131,7 +133,15 @@ function App() {
       )}
       {/* Settings modal */}
       {showSettings && (
-        <SettingsModal currentTheme={theme} onChangeTheme={setTheme} onClose={() => setShowSettings(false)} />
+        <SettingsModal 
+          currentTheme={theme} 
+          onChangeTheme={setTheme} 
+          onClose={() => setShowSettings(false)}
+          onFeedback={() => { setShowFeedback(true); setShowSettings(false); }}
+        />
+      )}
+      {showFeedback && (
+        <FeedbackForm onClose={() => setShowFeedback(false)} />
       )}
       {/* Auth modal overlay (for account actions) */}
       {showAuthModal && (
