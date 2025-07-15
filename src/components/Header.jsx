@@ -1,7 +1,7 @@
 import React from "react";
 import SearchBar from "./SearchBar";
 
-export default function DateBar({ applications, onSearchResults }) {
+export default function Header({ applications, onSearchResults }) {
     const getCurrentDate = () => {
         const today = new Date();
         return today.toLocaleDateString('en-US', { 
@@ -13,8 +13,8 @@ export default function DateBar({ applications, onSearchResults }) {
     };
 
     return (
-        <div className="dateBar">
-            <div className="dateBarContent">
+        <div className="headerBar">
+            <div className="headerBarContent">
                 <span>{getCurrentDate()}</span>
             </div>
             <SearchBar 

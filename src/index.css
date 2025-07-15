@@ -10,10 +10,10 @@
   --color-2-rgb: 15, 15, 8;
   --accent-green: #d7e6fd;
   --accent-green-hover: #d7e6fd;
-  --accent-blue: #d7e6fd;
-  --accent-blue-hover: #2563eb;
-  --accent-red: #0f0f08;
-  --accent-red-hover: #dc2626;
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #1d4ed8;
+  --accent-red: #dc2626;
+  --accent-red-hover: #b91c1c;
   --accent-yellow: #fbbf24;
   --accent-purple: #8b5cf6;
   --accent-cyan: #06b6d4;
@@ -22,7 +22,72 @@
   --gray-medium: #374151;
   --gray-dark: #1f2937;
   --notes-accent: #bcfa33;
+  --white: #fff;
+}
+
+.combo-1 {
+  --color-1: #d7e6fd;
+  --color-2: #0f0f08;
+  --accent-blue: #2563eb;
+  --accent-blue-hover: #1d4ed8;
+  --accent-green: #22c55e;
+  --accent-red: #dc2626;
+  --white: #fff;
+}
+.combo-2 {
+  --color-1: #0f0f08;
+  --color-2: #d7e6fd;
+  --accent-blue: #1e293b;
+  --accent-blue-hover: #2563eb;
+  --accent-green: #22c55e;
+  --accent-red: #dc2626;
   --white: #0f0f08;
+}
+.theme-purple {
+  --color-1: #ede9fe;
+  --color-2: #4c1d95;
+  --accent-blue: #8b5cf6;
+  --accent-blue-hover: #7c3aed;
+  --accent-green: #a7f3d0;
+  --accent-red: #f472b6;
+  --white: #fff;
+}
+.theme-yellow {
+  --color-1: #fef9c3;
+  --color-2: #92400e;
+  --accent-blue: #fbbf24;
+  --accent-blue-hover: #f59e0b;
+  --accent-green: #fde68a;
+  --accent-red: #f87171;
+  --white: #fff;
+}
+.theme-cyan {
+  --color-1: #cffafe;
+  --color-2: #155e75;
+  --accent-blue: #06b6d4;
+  --accent-blue-hover: #0891b2;
+  --accent-green: #99f6e4;
+  --accent-red: #f472b6;
+  --white: #fff;
+}
+.theme-orange {
+  --color-1: #ffedd5;
+  --color-2: #7c2d12;
+  --accent-blue: #f59e0b;
+  --accent-blue-hover: #ea580c;
+  --accent-green: #fdba74;
+  --accent-red: #f87171;
+  --white: #fff;
+}
+
+body {
+  background: var(--color-1);
+  color: var(--color-2);
+}
+
+#root {
+  background: var(--color-1);
+  color: var(--color-2);
 }
 
 /* Normal theme */
@@ -53,31 +118,31 @@ button {
   gap: 14px;
 }
 
-/* Date Bar Styles */
-.dateBar {
 
+/* Header Bar Styles */
+.headerBar {
+  display: inline-flex;
   margin-bottom: 8px;
+  gap: 10px;
 }
 
-.dateBarContent {
+.headerBarContent {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
-  align-items: left;
-  justify-content: left;
   gap: 10px;
   color: var(--color-2);
   font-weight: light;
   font-size: 1.1rem;
   transition: color 0.3s ease;
-  font-family:monospace;
+  font-family: monospace;
 }
 
-.dateBarContent i {
+.headerBarContent i {
   color: var(--accent-green);
   font-size: 1.2rem;
   transition: color 0.3s ease;
-  font-family:monospace;
+  font-family: monospace;
 }
 
 header {
@@ -102,16 +167,14 @@ header {
 
 .searchContainer {
   flex: 1;
+  border: none;
 }
 
 .toggleButton,
 .searchToggleButton {
   width: 100%;
   padding: 16px 20px;
-  background: var(--color-2);
-  color: var(--color-1);
-  border: 2px dashed rgba(var(--color-1-rgb), 0.3);
-  border-radius: 8px;
+
   cursor: pointer;
   font-size: 1.1rem;
   font-weight: bold;
@@ -125,20 +188,19 @@ header {
 .toggleButton:hover,
 .searchToggleButton:hover {
   background: rgba(15, 15, 8, 0.8);
-  border-color: var(--color-1);
+
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
 }
 
 .searchToggleButton {
   background: var(--accent-blue);
   color: var(--white);
-  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .searchToggleButton:hover {
   background: rgba(59, 130, 246, 0.8);
-  border-color: var(--accent-blue);
+
 }
 
 .searchToggleButton i {
@@ -147,8 +209,15 @@ header {
 
 /* Search Bar Styles */
 .searchBar {
-  background: var(--accent-blue);
+  background: var(--color-2);
   padding: 0.1em;
+  border: none !important;
+  box-shadow: none;
+  width: 75vw;
+  min-width: 120px;
+  max-width: 200px;
+  display: flex;
+  align-items: center;
 }
 
 .searchInput {
@@ -173,6 +242,7 @@ header {
   background: var(--color-1);
   font-size: 1rem;
   outline: none;
+  box-shadow: none;
 }
 
 .searchInput input::placeholder {
@@ -196,15 +266,9 @@ header {
   color: var(--gray-medium);
 }
 
+/* Remove searchResults info display */
 .searchResults {
-  margin-top: 8px;
-  text-align: center;
-}
-
-.searchResults small {
-  color: var(--white);
-  font-size: 0.9rem;
-  opacity: 0.9;
+  display: none !important;
 }
 
 /* Application Form Styles */
@@ -726,159 +790,87 @@ header,
 
 /* Affirmations Panel Styles */
 .affirmationsPanel {
-  flex: 1;
-  min-width: 280px;
+  background: var(--color-1);
+  color: var(--color-2);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  min-width: 260px;
   max-width: 350px;
-  background: rgba(var(--accent-green), 0.05);
-  border: 2px solid rgba(var(--accent-green), 0.2);
-  border-radius: 8px;
-  padding: 16px;
-  height: fit-content;
-  position: sticky;
-  top: 20px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
-
 .affirmationsHeader {
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: var(--color-2);
 }
-
 .affirmationsHeader h2 {
-  color: var(--accent-green);
-  font-size: 1.1rem;
-  margin-bottom: 12px;
+  color: var(--color-2);
+  font-size: 1.2rem;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
-.activateButton {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--accent-green);
-  color: var(--white);
+.affirmationsHeader i {
+  color: var(--color-2);
+}
+.activateButton, .nextButton, .stopButton {
+  background: var(--color-2);
+  color: var(--color-1);
   border: none;
   border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 1rem;
   cursor: pointer;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background-color 0.2s ease;
+  margin-left: 8px;
+  transition: background 0.2s, color 0.2s;
 }
-
-.activateButton:hover {
-  background: var(--accent-green-hover);
+.activateButton:hover, .nextButton:hover, .stopButton:hover {
+  background: var(--color-1);
+  color: var(--color-2);
+  border: 1px solid var(--color-2);
 }
-
 .affirmationControls {
   display: flex;
   gap: 8px;
 }
-
-.nextButton, .stopButton {
-  flex: 1;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.affirmationDisplay {
+  background: var(--color-2);
+  color: var(--color-1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+.affirmationText {
   display: flex;
   align-items: center;
+  gap: 8px;
   justify-content: center;
-  gap: 4px;
 }
-
-.nextButton {
-  background: var(--accent-blue);
-  color: var(--white);
-}
-
-.nextButton:hover {
-  background: var(--accent-blue-hover);
-}
-
-.stopButton {
-  background: var(--accent-red);
-  color: var(--white);
-}
-
-.stopButton:hover {
-  background: var(--accent-red-hover);
-}
-
-.affirmationDisplay {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.affirmationText {
-  background: var(--white);
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .affirmationText p {
-  color: var(--gray-dark);
-  font-size: 1rem;
-  line-height: 1.5;
+  color: var(--color-1);
+  font-size: 1.1rem;
   margin: 0;
-  text-align: center;
-  font-style: italic;
 }
-
-.quote-icon {
-  color: var(--accent-green);
-  font-size: 0.8rem;
-  opacity: 0.6;
+.affirmationText .quote-icon {
+  color: var(--color-1);
 }
-
-.affirmationText .fa-quote-left {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-}
-
-.affirmationText .fa-quote-right {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-}
-
-.affirmationFooter {
-  text-align: center;
-}
-
 .affirmationFooter small {
-  color: var(--gray-light);
-  font-size: 0.8rem;
+  color: var(--color-1);
+  opacity: 0.7;
 }
-
 .affirmationInactive {
+  color: var(--color-2);
   text-align: center;
-  padding: 20px;
-  color: var(--gray-light);
-  font-style: italic;
+  opacity: 0.7;
 }
-
-.affirmationInactive p {
-  margin: 0;
-  line-height: 1.4;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 
 /* More menu styles for job card */
 .moreButton {
@@ -933,6 +925,56 @@ header,
 .editInput:focus {
   outline: 2px solid var(--accent-blue);
   background: var(--white);
+}
+
+/* Auth Modal Styles */
+.authModalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.authModal {
+  background: var(--color-1);
+  color: var(--color-2);
+  border-radius: 12px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  min-width: 320px;
+  max-width: 90vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.authModalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-2);
+  cursor: pointer;
+}
+
+.personIconBtn {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  background: none;
+  border: none;
+  z-index: 1100;
+  font-size: 2rem;
+  color: var(--color-2);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.personIconBtn:hover {
+  color: var(--accent-blue-hover);
 }
 
 @media (min-width: 640px) {
@@ -996,11 +1038,11 @@ header,
     flex: none;
   }
   
-  .dateBarContent {
+  .headerBarContent {
     font-size: 1rem;
   }
   
-  .dateBar {
+  .headerBar {
     padding: 10px 16px;
     display: flex;
   }

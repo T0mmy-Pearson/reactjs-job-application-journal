@@ -5,9 +5,13 @@ export default function JobApplicationList({ applications, handleUpdateApplicati
     // Filter out rejected applications
     const activeApplications = applications.filter(app => app.status !== 'rejected');
     
-    // Group applications by date
+    // Group applications by date (fallback to today if missing/invalid)
     const groupedApplications = activeApplications.reduce((groups, application) => {
-        const date = application.dateApplied;
+        let date = application.dateApplied;
+        if (!date || isNaN(new Date(date).getTime())) {
+            // fallback to today
+            date = new Date().toISOString().slice(0, 10);
+        }
         if (!groups[date]) {
             groups[date] = [];
         }
@@ -20,6 +24,7 @@ export default function JobApplicationList({ applications, handleUpdateApplicati
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
         return date.toLocaleDateString('en-US', { 
             weekday: 'long', 
             year: 'numeric', 
