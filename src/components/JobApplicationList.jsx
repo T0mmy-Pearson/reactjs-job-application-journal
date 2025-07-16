@@ -55,7 +55,7 @@ export default function JobApplicationList({ applications, handleUpdateApplicati
                 <div key={date} className="dateGroup">
                     <h2 className="dateHeader">{formatDate(date)}</h2>
                     <div className="applicationsGroup">
-                        {groupedApplications[date].map(application => (
+                        {[...groupedApplications[date]].reverse().map(application => (
                             <JobApplicationItem
                                 key={application.id}
                                 application={application}
