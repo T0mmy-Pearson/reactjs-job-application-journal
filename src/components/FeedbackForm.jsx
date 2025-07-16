@@ -11,12 +11,15 @@ export default function FeedbackForm({ onClose }) {
     setError(null);
     emailjs.sendForm(
       "service_necz3nb",
-      "template_522nn6q",
+      "template_4zngu1b",
       form.current,
       "3-C4BaJMGBMJNwGGS"
     )
       .then(() => setSent(true))
-      .catch(() => setError("Could not send feedback. Please try again later."));
+      .catch((err) => {
+        console.error(err);
+        setError("Could not send feedback. Please try again later.");
+      });
   };
 
   if (sent) {

@@ -46,7 +46,17 @@ export default function AuthForm({ onAuth, onClose }) {
             marginBottom: "1.5rem",
             fontWeight: 700,
             letterSpacing: "0.02em"
-          }}>{isRegister ? "Register" : "Login"}</h2>
+          }}>Job Journal {isRegister ? "Registration" : "Login"}</h2>
+          <div style={{
+            marginBottom: "1rem",
+            color: "var(--color-2)",
+            fontSize: "1rem",
+            textAlign: "center"
+          }}>
+            {isRegister
+              ? "Create a new account to save your job applications, todos, and affirmations."
+              : "Log in to access your job journal and keep track of your progress."}
+          </div>
           <input
             className="authInput"
             value={email}
