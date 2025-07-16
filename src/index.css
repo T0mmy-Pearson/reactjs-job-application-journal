@@ -80,7 +80,7 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--color-2);
+  color: var(--color-1);
   cursor: pointer;
   margin-right: 16px;
   margin-left: 0;
@@ -403,6 +403,7 @@ border: none;
   padding: 32px 32px 24px 32px;
   border-radius: 12px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  background: var(--color-2);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -436,7 +437,7 @@ border: none;
 .closeButton {
   background: transparent;
   border: none;
-  color: var(--color-1);
+  color: var(--color-2);
   font-size: 1rem;
   cursor: pointer;
   padding: 4px 8px;
@@ -445,7 +446,7 @@ border: none;
 }
 
 .closeButton:hover {
-  background: rgba(var(--color-1-rgb), 0.1);
+  background: rgba(var(--color-2-rgb), 0.1);
   transform: scale(1.1);
 }
 

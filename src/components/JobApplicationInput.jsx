@@ -32,7 +32,7 @@ export default function JobApplicationInput(props) {
                 notes: "",
                 labels: []
             });
-            setShowForm(false); // Hide form after successful submission
+            setShowForm(false); 
         }
     };
 
