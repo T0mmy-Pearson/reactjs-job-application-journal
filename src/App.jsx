@@ -131,6 +131,34 @@ function App() {
           )}
         </div>
       )}
+
+      {/* Central page title */}
+      {user && (
+        <div style={{
+          position: 'fixed',
+          top: 24,
+          left: 0,
+          width: '100vw',
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 1100,
+          pointerEvents: 'none',
+        }}>
+          <h1 style={{
+
+            fontWeight: 800,
+            fontSize: '2.1rem',
+            color: 'var(--color-2)',
+            letterSpacing: '0.01em',
+            margin: 0,
+            textShadow: '0 1px 2px rgba(0,0,0,0.07)',
+            pointerEvents: 'auto',
+            padding: '2px 32px 2px 32px'
+          }}>
+            Your Job Journal
+          </h1>
+        </div>
+      )}
       {/* Settings modal */}
       {showSettings && (
         <SettingsModal 
