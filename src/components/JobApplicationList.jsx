@@ -53,7 +53,10 @@ export default function JobApplicationList({ applications, handleUpdateApplicati
             />
             {sortedDates.map(date => (
                 <div key={date} className="dateGroup">
-                    <h2 className="dateHeader">{formatDate(date)}</h2>
+                    <h2 className="dateHeader">
+                      {formatDate(date)}
+                      {' '}({groupedApplications[date].length})
+                    </h2>
                     <div className="applicationsGroup">
                         {[...groupedApplications[date]].reverse().map(application => (
                             <JobApplicationItem

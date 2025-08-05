@@ -1,4 +1,3 @@
-// JobApplicationInput is now handled inside Header
 import JobApplicationList from "./components/JobApplicationList";
 import RejectionPile from "./components/RejectionPile";
 import AffirmationsPanel from "./components/AffirmationsPanel";
@@ -32,6 +31,15 @@ function App() {
     return localStorage.getItem("theme") || "combo-1";
   });
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showTitle, setShowTitle] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowTitle(window.scrollY < 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     document.body.className = theme;
@@ -132,7 +140,7 @@ function App() {
         </div>
       )}
 
-      {/* Central page title */}
+      {/* Central page title with fade in/out on scroll */}
       {user && (
         <div style={{
           position: 'fixed',
@@ -144,17 +152,20 @@ function App() {
           zIndex: 1100,
           pointerEvents: 'none',
         }}>
-          <h1 style={{
-
-            fontWeight: 800,
-            fontSize: '2.1rem',
-            color: 'var(--color-2)',
-            letterSpacing: '0.01em',
-            margin: 0,
-            textShadow: '0 1px 2px rgba(0,0,0,0.07)',
-            pointerEvents: 'auto',
-            padding: '2px 32px 2px 32px'
-          }}>
+          <h1
+            style={{
+              fontWeight: 800,
+              fontSize: '2.1rem',
+              color: 'var(--color-2)',
+              letterSpacing: '0.01em',
+              margin: 0,
+              textShadow: '0 1px 2px rgba(0,0,0,0.07)',
+              pointerEvents: 'auto',
+              padding: '2px 32px 2px 32px',
+              opacity: showTitle ? 1 : 0,
+              transition: 'opacity 0.5s cubic-bezier(.4,0,.2,1)'
+            }}
+          >
             Your Job Journal
           </h1>
         </div>
@@ -166,6 +177,7 @@ function App() {
           onChangeTheme={setTheme} 
           onClose={() => setShowSettings(false)}
           onFeedback={() => { setShowFeedback(true); setShowSettings(false); }}
+          totalJobs={applications.length}
         />
       )}
       {showFeedback && (

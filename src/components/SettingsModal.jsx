@@ -9,7 +9,7 @@ const themes = [
   { name: "Orange", className: "theme-orange" },
 ];
 
-export default function SettingsModal({ currentTheme, onChangeTheme, onClose, onFeedback }) {
+export default function SettingsModal({ currentTheme, onChangeTheme, onClose, onFeedback, totalJobs }) {
   useEffect(() => {
     function handleEsc(e) {
       if (e.key === "Escape" && onClose) onClose();
@@ -45,6 +45,10 @@ export default function SettingsModal({ currentTheme, onChangeTheme, onClose, on
                 </button>
               ))}
             </div>
+          </div>
+          {/* Total jobs summary in settings modal */}
+          <div style={{ margin: '18px 0 0 0', textAlign: 'center', fontWeight: 600, fontSize: '1.15rem', color: 'var(--color-2)' }}>
+            Total Jobs applied for: {totalJobs}
           </div>
           <div style={{ marginTop: 24, textAlign: "center" }}>
             <button
