@@ -51,37 +51,7 @@ export const defaultApplications = [
     labels: ['devops', 'interview'],
     status: 'interviewed',
     date: '2025-07-01',
-  },
-  {
-    id: '6',
-    company: 'Stark Industries',
-    position: 'Full Stack Developer',
-    source: 'AngelList',
-    notes: 'Startup, equity offered.',
-    labels: ['startup', 'equity'],
-    status: 'offer',
-    date: '2025-07-13',
-  },
-  {
-    id: '7',
-    company: 'Hooli',
-    position: 'Product Manager',
-    source: 'Referral',
-    notes: 'Met hiring manager at conference.',
-    labels: ['pm', 'networking'],
-    status: 'awaiting-response',
-    date: '2025-07-09',
-  },
-  {
-    id: '8',
-    company: 'Soylent Corp',
-    position: 'Data Scientist',
-    source: 'LinkedIn',
-    notes: 'Remote, food tech.',
-    labels: ['data', 'remote'],
-    status: 'applied',
-    date: '2025-07-11',
-  },
+  }
 ];
 
 export default function SearchBar({ applications, onSearchResults }) {
