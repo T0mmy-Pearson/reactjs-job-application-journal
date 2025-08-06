@@ -116,7 +116,44 @@ function App() {
   const rejectedApplications = applications.filter(app => app.status === 'rejected');
   const displayApplications = searchResults !== null ? searchResults : applications;
 
-  if (loading) return <div>Loading...</div>;
+if (loading) return (
+  <div style={{
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'var(--color-1)',
+    color: 'var(--color-2)',
+    fontFamily: 'inherit',
+    zIndex: 2000
+  }}>
+    <div style={{
+      width: 70,
+      height: 70,
+      marginBottom: 32,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      <div style={{
+        width: 60,
+        height: 60,
+        border: '7px solid var(--color-2)',
+        borderTop: '7px solid var(--color-1)',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
+      }} />
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+    <div style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '0.04em' }}>Loading...</div>
+  </div>
+);
 
   // If not logged in, show only the login/register modal
   if (!user && !showAuthModal) {
