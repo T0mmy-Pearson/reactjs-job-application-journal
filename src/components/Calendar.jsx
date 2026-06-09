@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
-// Simple calendar for current month, theme-driven
-export default function Calendar() {
+const pad = (n) => String(n).padStart(2, "0");
+const toKey = (year, month, day) => `${year}-${pad(month + 1)}-${pad(day)}`;
+
+// Simple calendar for current month, theme-driven, with application activity.
+export default function Calendar({ applications = [], selectedDate = null, onSelectDate = () => {} }) {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -24,6 +27,18 @@ export default function Calendar() {
   for (let d = 1; d <= daysInMonth; d++) {
     days.push(d);
   }
+
+  // Group applications by the day they were applied (handles both field names).
+  const appsByDate = useMemo(() => {
+    const map = {};
+    (applications || []).forEach((app) => {
+      const key = app.dateApplied || app.date;
+      if (!key) return;
+      if (!map[key]) map[key] = [];
+      map[key].push(app);
+    });
+    return map;
+  }, [applications]);
 
   const handlePrevMonth = () => {
     if (currentMonth === 0) {
@@ -49,6 +64,15 @@ export default function Calendar() {
   ];
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  const formatSelected = (key) => {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+      weekday: "long", month: "long", day: "numeric"
+    });
+  };
+
+  const selectedApps = selectedDate ? (appsByDate[selectedDate] || []) : [];
+
   // Notes state and persistence
   const [notes, setNotes] = useState("");
 
@@ -69,7 +93,7 @@ export default function Calendar() {
         color: "var(--color-2)",
         borderRadius: 8,
         padding: 16,
-        marginTop: 16,
+        marginTop: 0,
         boxShadow: "none",
         border: "1px solid var(--color-2)",
       }}>
@@ -80,28 +104,73 @@ export default function Calendar() {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, textAlign: "center", marginBottom: 4 }}>
           {weekDays.map(day => (
-            <div key={day} style={{ fontWeight: "bold", color: "var(--color-2)" }}>{day}</div>
+            <div key={day} style={{ fontWeight: "bold", color: "var(--color-2)", fontSize: "0.85rem" }}>{day}</div>
           ))}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, textAlign: "center" }}>
-          {days.map((d, i) => (
-            <div key={i} style={{
-              padding: d ? "6px 0" : undefined,
-              opacity: d ? 1 : 0,
-              background: d && d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear() ? "var(--color-2)" : "none",
-              color: d && d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear() ? "var(--color-1)" : "var(--color-2)",
-              borderRadius: 4,
-              fontWeight: d && d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear() ? "bold" : undefined
-            }}>{d || ""}</div>
-          ))}
+          {days.map((d, i) => {
+            if (!d) return <div key={i} className="calCell calCell--empty" />;
+            const dateKey = toKey(currentYear, currentMonth, d);
+            const dayApps = appsByDate[dateKey] || [];
+            const isToday = d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+            const isSelected = dateKey === selectedDate;
+            return (
+              <button
+                key={i}
+                type="button"
+                className={`calCell${isToday ? " calCell--today" : ""}${isSelected ? " calCell--selected" : ""}`}
+                onClick={() => onSelectDate(isSelected ? null : dateKey)}
+                title={dayApps.length ? `${dayApps.length} application${dayApps.length > 1 ? "s" : ""}` : undefined}
+              >
+                <span className="calDayNum">{d}</span>
+                {dayApps.length > 0 && (
+                  <span className="calDots">
+                    {dayApps.slice(0, 3).map(app => (
+                      <span
+                        key={app.id}
+                        className="calDot"
+                        style={{ background: `var(--status-${app.status})` }}
+                      />
+                    ))}
+                    {dayApps.length > 3 && <span className="calDotMore">+{dayApps.length - 3}</span>}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {selectedDate && (
+        <div className="calDetail">
+          <div className="calDetailHeader">
+            <span>{formatSelected(selectedDate)}</span>
+            <button type="button" onClick={() => onSelectDate(null)} aria-label="Close" title="Close">✕</button>
+          </div>
+          {selectedApps.length === 0 ? (
+            <p className="calDetailEmpty">No applications on this date.</p>
+          ) : (
+            <ul className="calDetailList">
+              {selectedApps.map(app => (
+                <li key={app.id} className="calDetailItem">
+                  <span className="calDetailDot" style={{ background: `var(--status-${app.status})` }} />
+                  <span className="calDetailText">
+                    <strong>{app.company}</strong>
+                    <span>{app.position}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       <div style={{
-        marginTop: 12,
+        marginTop: 16,
         background: "var(--color-1)",
         border: "1px solid var(--color-2)",
         borderRadius: 8,
-        padding: 12,
+        padding: 16,
         boxShadow: "none"
       }}>
         <label htmlFor="calendarNotes" style={{ fontWeight: 500, color: "var(--color-2)", marginBottom: 4, display: "block" }}>Notes</label>

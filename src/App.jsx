@@ -1,8 +1,9 @@
 import JobApplicationList from "./components/JobApplicationList";
+import JobApplicationInput from "./components/JobApplicationInput";
 import RejectionPile from "./components/RejectionPile";
 import AffirmationsPanel from "./components/AffirmationsPanel";
+import LinksPanel from "./components/LinksPanel";
 import Calendar from "./components/Calendar";
-import Header from "./components/Header";
 import { useState, useEffect } from "react";
 import { auth, db } from "./firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -11,8 +12,9 @@ import AuthForm from "./components/AuthForm";
 import { FaUser } from "react-icons/fa";
 import { signOut } from "firebase/auth";
 import SettingsModal from "./components/SettingsModal";
+import StatsModal from "./components/StatsModal";
 import FeedbackForm from "./components/FeedbackForm";
-import { defaultApplications } from "./components/SearchBar";
+import SearchBar, { defaultApplications } from "./components/SearchBar";
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -27,24 +29,9 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "combo-1";
-  });
   const [showFeedback, setShowFeedback] = useState(false);
-  const [showTitle, setShowTitle] = useState(true);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowTitle(window.scrollY < 10);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    document.body.className = theme;
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  const [showStats, setShowStats] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   // Save applications to Firestore for this user
   async function persistData(newList) {
@@ -61,8 +48,12 @@ function App() {
 
   // Update
   async function handleUpdateApplication(id, updatedApplication) {
-    const newApplicationsList = applications.map(app => 
-      app.id === id ? updatedApplication : app
+    // A rejection always means you've heard back from the employer.
+    const normalized = updatedApplication.status === 'rejected'
+      ? { ...updatedApplication, heardBack: true }
+      : updatedApplication;
+    const newApplicationsList = applications.map(app =>
+      app.id === id ? normalized : app
     );
     await persistData(newApplicationsList);
     setApplications(newApplicationsList);
@@ -76,7 +67,7 @@ function App() {
   }
 
   function handleRejectApplication(applicationId) {
-    const application = applications.find(app => app.id === parseInt(applicationId));
+    const application = applications.find(app => String(app.id) === String(applicationId));
     if (application) {
       handleUpdateApplication(application.id, { ...application, status: 'rejected' });
     }
@@ -162,93 +153,75 @@ if (loading) return (
 
   return (
     <>
-      {/* Person icon button for opening user menu */}
-      {user && (
-        <div style={{position: 'fixed', top: 24, right: 32, zIndex: 1200}}>
-          <button className="personIconBtn" onClick={() => setShowUserMenu(m => !m)} title="Account">
-            <FaUser />
-          </button>
-          {showUserMenu && (
-            <div style={{position: 'absolute', top: 40, right: 0, background: 'var(--color-1)', color: 'var(--color-2)', borderRadius: 8, minWidth: 160, zIndex: 1300, padding: 0, border: '1px solid var(--color-2)'}}>
-              <button className="moreMenuItem" style={{width: '100%', padding: '10px 16px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer'}} onClick={() => { setShowSettings(true); setShowUserMenu(false); }}>Settings</button>
-              <button className="moreMenuItem" style={{width: '100%', padding: '10px 16px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer'}} onClick={handleLogout}>Log out</button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Central page title with fade in/out on scroll */}
-      {user && (
-        <div style={{
-          position: 'fixed',
-          top: 24,
-          left: 0,
-          width: '100vw',
-          display: 'flex',
-          justifyContent: 'center',
-          zIndex: 1100,
-          pointerEvents: 'none',
-        }}>
-          <h1
-            style={{
-              fontWeight: 800,
-              fontSize: '2.1rem',
-              color: 'var(--color-2)',
-              letterSpacing: '0.01em',
-              margin: 0,
-              textShadow: '0 1px 2px rgba(0,0,0,0.07)',
-              pointerEvents: 'auto',
-              padding: '2px 32px 2px 32px',
-              opacity: showTitle ? 1 : 0,
-              transition: 'opacity 0.5s cubic-bezier(.4,0,.2,1)'
-            }}
-          >
-            Your Job Journal
-          </h1>
-        </div>
-      )}
       {/* Settings modal */}
       {showSettings && (
-        <SettingsModal 
-          currentTheme={theme} 
-          onChangeTheme={setTheme} 
+        <SettingsModal
+          user={user}
           onClose={() => setShowSettings(false)}
           onFeedback={() => { setShowFeedback(true); setShowSettings(false); }}
-          totalJobs={applications.length}
         />
       )}
       {showFeedback && (
         <FeedbackForm onClose={() => setShowFeedback(false)} />
       )}
+      <StatsModal
+        open={showStats}
+        onClose={() => setShowStats(false)}
+        applications={applications}
+      />
       {/* Auth modal overlay (for account actions) */}
       {showAuthModal && (
         <AuthForm onAuth={() => setShowAuthModal(false)} onClose={() => setShowAuthModal(false)} />
       )}
-      <div className="headerBar">
-        <Header 
-          applications={applications}
-          onSearchResults={handleSearchResults}
-          handleAddApplication={handleAddApplication}
-        />
-      </div>
+      {user && (
+        <header className="appHeader">
+          <div className="accountMenuWrap">
+            <button className="personIconBtn" onClick={() => setShowUserMenu(m => !m)} title="Account">
+              <FaUser />
+            </button>
+            {showUserMenu && (
+              <div className="accountMenu">
+                <button className="moreMenuItem" onClick={() => { setShowStats(true); setShowUserMenu(false); }}>Stats</button>
+                <button className="moreMenuItem" onClick={() => { setShowSettings(true); setShowUserMenu(false); }}>Settings</button>
+                <button className="moreMenuItem" onClick={handleLogout}>Log out</button>
+              </div>
+            )}
+          </div>
+          <h1 className="appTitle"><span>Your Job Journal</span></h1>
+        </header>
+      )}
       <div className={`mainContainer ${isDragOverRejectPile ? 'dragOverReject' : ''}`}>
-        <div>
+        <div className="sideColumn">
           <AffirmationsPanel />
-          <Calendar />
+          <div className="searchAddRow">
+            <JobApplicationInput handleAddApplication={handleAddApplication} />
+            <SearchBar
+              applications={applications}
+              onSearchResults={handleSearchResults}
+            />
+          </div>
+          <Calendar
+            applications={applications}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+          />
+          <LinksPanel user={user} />
+          <RejectionPile
+            rejectedApplications={rejectedApplications}
+            handleUpdateApplication={handleUpdateApplication}
+            handleDeleteApplication={handleDeleteApplication}
+            onDrop={handleRejectApplication}
+            onDragOver={handleDragOverRejectPile}
+          />
         </div>
-        <JobApplicationList 
-          applications={displayApplications}
-          handleUpdateApplication={handleUpdateApplication}
-          handleDeleteApplication={handleDeleteApplication}
-          handleAddApplication={handleAddApplication}
-        />
-        <RejectionPile 
-          rejectedApplications={rejectedApplications}
-          handleUpdateApplication={handleUpdateApplication}
-          handleDeleteApplication={handleDeleteApplication}
-          onDrop={handleRejectApplication}
-          onDragOver={handleDragOverRejectPile}
-        />
+        <div className="applicationsSection">
+          <JobApplicationList
+            applications={displayApplications}
+            handleUpdateApplication={handleUpdateApplication}
+            handleDeleteApplication={handleDeleteApplication}
+            focusedDate={selectedDate}
+          />
+        </div>
       </div>
     </>
   );

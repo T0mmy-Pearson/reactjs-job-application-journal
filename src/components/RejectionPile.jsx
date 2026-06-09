@@ -4,6 +4,7 @@ import JobApplicationItem from "./JobApplicationItem";
 export default function RejectionPile({ rejectedApplications, handleUpdateApplication, handleDeleteApplication, onDrop, onDragOver }) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipMessage, setTooltipMessage] = useState("");
+    const [collapsed, setCollapsed] = useState(true);
 
     const tooltipMessages = [
         "What's for ye, won't pass ye by",
@@ -30,11 +31,13 @@ export default function RejectionPile({ rejectedApplications, handleUpdateApplic
         
         onDrop(applicationId);
         onDragOver(false);
+        setCollapsed(false); // reveal the newly rejected application
     };
 
     const handleDragOver = (e) => {
         e.preventDefault();
         onDragOver(true);
+        setCollapsed(false); // open the drop zone while dragging over it
     };
 
     const handleDragLeave = (e) => {
@@ -43,38 +46,47 @@ export default function RejectionPile({ rejectedApplications, handleUpdateApplic
     };
 
     return (
-        <div 
-            className="rejectionPile"
+        <div
+            className={`rejectionPile ${collapsed ? 'collapsed' : ''}`}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
         >
-            <h2 className="rejectionHeader">
-                <i className="fa-solid fa-trash"></i> Rejection Pile ({rejectedApplications.length})
-            </h2>
-            
+            <button
+                type="button"
+                className="rejectionHeader"
+                onClick={() => setCollapsed(c => !c)}
+                aria-expanded={!collapsed}
+            >
+                <i className="fa-solid fa-trash"></i>
+                <span>Rejection Pile ({rejectedApplications.length})</span>
+                <i className={`fa-solid fa-chevron-${collapsed ? 'down' : 'up'} rejectionChevron`}></i>
+            </button>
+
             {showTooltip && (
                 <div className="rejectionTooltip">
                     <i className="fa-solid fa-heart"></i>
                     <span>{tooltipMessage}</span>
                 </div>
             )}
-            
-            <div className="rejectedApplications">
-                {rejectedApplications.length === 0 ? (
-                    <p className="emptyRejectionState">Drag rejected applications here</p>
-                ) : (
-                    rejectedApplications.map(application => (
-                        <JobApplicationItem
-                            key={application.id}
-                            application={application}
-                            handleUpdateApplication={handleUpdateApplication}
-                            handleDeleteApplication={handleDeleteApplication}
-                            isDraggable={false}
-                        />
-                    ))
-                )}
-            </div>
+
+            {!collapsed && (
+                <div className="rejectedApplications">
+                    {rejectedApplications.length === 0 ? (
+                        <p className="emptyRejectionState">Drag rejected applications here</p>
+                    ) : (
+                        [...rejectedApplications].reverse().map(application => (
+                            <JobApplicationItem
+                                key={application.id}
+                                application={application}
+                                handleUpdateApplication={handleUpdateApplication}
+                                handleDeleteApplication={handleDeleteApplication}
+                                isDraggable={false}
+                            />
+                        ))
+                    )}
+                </div>
+            )}
         </div>
     );
 }

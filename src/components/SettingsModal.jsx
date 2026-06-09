@@ -1,15 +1,43 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { auth } from "../firebase";
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  verifyBeforeUpdateEmail,
+} from "firebase/auth";
 
-const themes = [
-  { name: "Default", className: "combo-1" },
-  { name: "Inverse", className: "combo-2" },
-  { name: "Purple", className: "theme-purple" },
-  { name: "Yellow", className: "theme-yellow" },
-  { name: "Cyan", className: "theme-cyan" },
-  { name: "Orange", className: "theme-orange" },
-];
+function friendlyError(err) {
+  switch (err?.code) {
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "Current password is incorrect.";
+    case "auth/weak-password":
+      return "New password is too weak (use at least 6 characters).";
+    case "auth/invalid-email":
+      return "That email address is not valid.";
+    case "auth/email-already-in-use":
+      return "That email is already in use by another account.";
+    case "auth/requires-recent-login":
+      return "Please log out and back in, then try again.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Try again later.";
+    default:
+      return err?.message || "Something went wrong.";
+  }
+}
 
-export default function SettingsModal({ currentTheme, onChangeTheme, onClose, onFeedback, totalJobs }) {
+export default function SettingsModal({ user, onClose, onFeedback }) {
+  const [newEmail, setNewEmail] = useState("");
+  const [emailPassword, setEmailPassword] = useState("");
+  const [emailMsg, setEmailMsg] = useState(null);
+
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordCurrent, setPasswordCurrent] = useState("");
+  const [pwMsg, setPwMsg] = useState(null);
+
+  const [busy, setBusy] = useState(false);
+
   useEffect(() => {
     function handleEsc(e) {
       if (e.key === "Escape" && onClose) onClose();
@@ -18,55 +46,106 @@ export default function SettingsModal({ currentTheme, onChangeTheme, onClose, on
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
+  async function reauthenticate(currentPassword) {
+    const cred = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
+    await reauthenticateWithCredential(auth.currentUser, cred);
+  }
+
+  async function handleChangeEmail(e) {
+    e.preventDefault();
+    setEmailMsg(null);
+    if (!newEmail.trim() || !emailPassword) return;
+    setBusy(true);
+    try {
+      await reauthenticate(emailPassword);
+      await verifyBeforeUpdateEmail(auth.currentUser, newEmail.trim());
+      setEmailMsg({ type: "ok", text: `Verification sent to ${newEmail.trim()}. Click the link in that email to finish the change.` });
+      setNewEmail("");
+      setEmailPassword("");
+    } catch (err) {
+      setEmailMsg({ type: "err", text: friendlyError(err) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleChangePassword(e) {
+    e.preventDefault();
+    setPwMsg(null);
+    if (!newPassword || !passwordCurrent) return;
+    setBusy(true);
+    try {
+      await reauthenticate(passwordCurrent);
+      await updatePassword(auth.currentUser, newPassword);
+      setPwMsg({ type: "ok", text: "Password updated." });
+      setNewPassword("");
+      setPasswordCurrent("");
+    } catch (err) {
+      setPwMsg({ type: "err", text: friendlyError(err) });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <div>
-      <div className="authModalOverlay">
-        <div className="authModal" style={{ minWidth: 320 }}>
-          <button className="authModalClose" onClick={onClose} title="Close">✕</button>
-          <h2>Settings</h2>
-          <div style={{ margin: "1.5rem 0" }}>
-            <label style={{ fontWeight: "bold" }}>Colour Scheme:</label>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
-              {themes.map(theme => (
-                <button
-                  key={theme.className}
-                  style={{
-                    padding: "10px 18px",
-                    borderRadius: 8,
-                    border: currentTheme === theme.className ? "2px solid var(--color-2)" : "1px solid var(--color-2)",
-                    background: currentTheme === theme.className ? "var(--color-2)" : "var(--color-1)",
-                    color: currentTheme === theme.className ? "var(--color-1)" : "var(--color-2)",
-                    fontWeight: currentTheme === theme.className ? "bold" : "normal",
-                    cursor: "pointer"
-                  }}
-                  onClick={() => onChangeTheme(theme.className)}
-                >
-                  {theme.name}
-                </button>
-              ))}
-            </div>
-          </div>
-          {/* Total jobs summary in settings modal */}
-          <div style={{ margin: '18px 0 0 0', textAlign: 'center', fontWeight: 600, fontSize: '1.15rem', color: 'var(--color-2)' }}>
-            Total Jobs applied for: {totalJobs}
-          </div>
-          <div style={{ marginTop: 24, textAlign: "center" }}>
-            <button
-              style={{
-                background: "var(--color-2)",
-                color: "var(--color-1)",
-                border: "none",
-                borderRadius: 8,
-                padding: "10px 18px",
-                fontWeight: "bold",
-                cursor: "pointer"
-              }}
-              onClick={onFeedback}
-            >
-              Send Feedback
-            </button>
-          </div>
-        </div>
+    <div className="authModalOverlay">
+      <div className="authModal settingsModalBox">
+        <button className="authModalClose" onClick={onClose} title="Close">✕</button>
+        <h2>Settings</h2>
+
+        <p className="settingsCurrent">
+          Signed in as <strong>{user?.email}</strong>
+        </p>
+
+        {/* Change email */}
+        <form className="settingsSection" onSubmit={handleChangeEmail}>
+          <span className="settingsSectionTitle">Change email</span>
+          <input
+            className="settingsInput"
+            type="email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            placeholder="New email address"
+            autoComplete="email"
+          />
+          <input
+            className="settingsInput"
+            type="password"
+            value={emailPassword}
+            onChange={(e) => setEmailPassword(e.target.value)}
+            placeholder="Current password"
+            autoComplete="current-password"
+          />
+          <button type="submit" className="settingsSaveBtn" disabled={busy}>Update email</button>
+          {emailMsg && <p className={`settingsMsg ${emailMsg.type}`}>{emailMsg.text}</p>}
+        </form>
+
+        {/* Change password */}
+        <form className="settingsSection" onSubmit={handleChangePassword}>
+          <span className="settingsSectionTitle">Change password</span>
+          <input
+            className="settingsInput"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="New password"
+            autoComplete="new-password"
+          />
+          <input
+            className="settingsInput"
+            type="password"
+            value={passwordCurrent}
+            onChange={(e) => setPasswordCurrent(e.target.value)}
+            placeholder="Current password"
+            autoComplete="current-password"
+          />
+          <button type="submit" className="settingsSaveBtn" disabled={busy}>Update password</button>
+          {pwMsg && <p className={`settingsMsg ${pwMsg.type}`}>{pwMsg.text}</p>}
+        </form>
+
+        <button type="button" className="settingsFeedbackBtn" onClick={onFeedback}>
+          Send Feedback
+        </button>
       </div>
     </div>
   );

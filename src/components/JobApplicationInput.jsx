@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
-import SearchBar from "./SearchBar";
 import LabelsInput from "./LabelsInput";
 
-export default function JobApplicationInput(props) {
-    const { handleAddApplication, applicationData, setApplicationData, applications, onSearchResults } = props;
+const EMPTY_APPLICATION = {
+    company: "",
+    position: "",
+    status: "applying",
+    source: "",
+    notes: "",
+    labels: []
+};
+
+export default function JobApplicationInput({ handleAddApplication }) {
+    const [applicationData, setApplicationData] = useState(EMPTY_APPLICATION);
     const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
@@ -24,15 +32,8 @@ export default function JobApplicationInput(props) {
                 dateApplied: new Date().toISOString().split('T')[0],
                 heardBack: false
             });
-            setApplicationData({
-                company: "",
-                position: "",
-                status: "applying",
-                source: "",
-                notes: "",
-                labels: []
-            });
-            setShowForm(false); 
+            setApplicationData(EMPTY_APPLICATION);
+            setShowForm(false);
         }
     };
 
@@ -41,23 +42,19 @@ export default function JobApplicationInput(props) {
     };
 
     return (
-        <header>
-            {!showForm ? (
-                <div className="headerControls">
-                    <div className="addApplicationToggle">
-                        <button 
-                            type="button" 
-                            className="toggleButton"
-                            onClick={toggleForm}
-                            title="Add new job application"
-                        >
-                            <i className="fa-solid fa-plus"></i>
-                            <span>Add Application</span>
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <form onSubmit={handleSubmit} className="applicationForm">
+        <>
+            <button
+                type="button"
+                className="addApplicationBtn"
+                onClick={toggleForm}
+                title="Add new job application"
+            >
+                <i className="fa-solid fa-plus"></i>
+                <span>Add</span>
+            </button>
+            {showForm && (
+                <div className="authModalOverlay" onClick={toggleForm}>
+                <form onSubmit={handleSubmit} className="applicationForm" onClick={e => e.stopPropagation()}>
                     <div className="formHeader">
                         <button 
                             type="button" 
@@ -116,7 +113,8 @@ export default function JobApplicationInput(props) {
                         </button>
                     </div>
                 </form>
+                </div>
             )}
-        </header>
+        </>
     );
 }

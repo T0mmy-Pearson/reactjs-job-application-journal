@@ -105,15 +105,19 @@
   }
 }
 * {
-  font-family: 'Monserrat', sans-serif;
+  font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   margin: 0;
   padding: 0;
 }
 :root {
-  --color-1: #d7e6fd;
-  --color-2: #0f0f08;
-  --color-1-rgb: 215, 230, 253;
-  --color-2-rgb: 15, 15, 8;
+  /* Swiss / International Typographic palette: warm off-white, near-black,
+     one red-orange accent reserved for emphasis. */
+  --color-1: #ecebe7;
+  --color-2: #141414;
+  --color-1-rgb: 236, 235, 231;
+  --color-2-rgb: 20, 20, 20;
+  --accent: #e8412a;
+  --accent-strong: #c9341d;
   --accent-green: #d7e6fd;
   --accent-green-hover: #d7e6fd;
   --accent-blue: #2563eb;
@@ -129,61 +133,16 @@
   --gray-dark: #1f2937;
   --notes-accent: #bcfa33;
   --white: #fff;
-}
 
-.combo-1 {
-  --color-1: #d7e6fd;
-  --color-2: #0f0f08;
-  --accent-blue: #2563eb;
-  --accent-blue-hover: #1d4ed8;
-  --accent-green: #22c55e;
-  --accent-red: #dc2626;
-  --white: #fff;
-}
-.combo-2 {
-  --color-1: #0f0f08;
-  --color-2: #d7e6fd;
-  --accent-blue: #1e293b;
-  --accent-blue-hover: #2563eb;
-  --accent-green: #22c55e;
-  --accent-red: #dc2626;
-  --white: #0f0f08;
-}
-.theme-purple {
-  --color-1: #ede9fe;
-  --color-2: #4c1d95;
-  --accent-blue: #8b5cf6;
-  --accent-blue-hover: #7c3aed;
-  --accent-green: #a7f3d0;
-  --accent-red: #f472b6;
-  --white: #fff;
-}
-.theme-yellow {
-  --color-1: #fef9c3;
-  --color-2: #92400e;
-  --accent-blue: #fbbf24;
-  --accent-blue-hover: #f59e0b;
-  --accent-green: #fde68a;
-  --accent-red: #f87171;
-  --white: #fff;
-}
-.theme-cyan {
-  --color-1: #cffafe;
-  --color-2: #155e75;
-  --accent-blue: #06b6d4;
-  --accent-blue-hover: #0891b2;
-  --accent-green: #99f6e4;
-  --accent-red: #f472b6;
-  --white: #fff;
-}
-.theme-orange {
-  --color-1: #ffedd5;
-  --color-2: #7c2d12;
-  --accent-blue: #f59e0b;
-  --accent-blue-hover: #ea580c;
-  --accent-green: #fdba74;
-  --accent-red: #f87171;
-  --white: #fff;
+  /* Semantic status colours — intentionally NOT overridden per theme,
+     so a status always reads the same colour everywhere. */
+  --status-applying: #f59e0b;          /* amber  */
+  --status-applied: #2563eb;           /* blue   */
+  --status-awaiting-interview: #8b5cf6;/* violet */
+  --status-interviewed: #06b6d4;       /* cyan   */
+  --status-awaiting-response: #f97316; /* orange */
+  --status-offer: #22c55e;             /* green  */
+  --status-rejected: #ef4444;          /* red    */
 }
 
 body {
@@ -196,23 +155,17 @@ body {
   color: var(--color-2);
 }
 
-/* Normal theme */
-.combo-1 {
-  color: var(--color-1);
-  background-color: var(--color-2);
-}
-
-/* Inverse theme */
-.combo-2 {
-  color: var(--color-2);
-  background-color: var(--color-1);
-}
+/* Single palette defined in :root; body and #root apply --color-1 /
+   --color-2 directly. */
+/* Titles: Changa One (heavy display). Everything else: JetBrains Mono. */
 h1,
 h2,
 h3,
-input,
-button {
-  font-family: 'Cascadia Mono', system-ui;
+.appTitle,
+.rejectionHeader {
+  font-family: 'Changa One', 'Arial Black', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 
@@ -268,12 +221,12 @@ header {
   margin-right: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 16px;
 }
 
 .addApplicationToggle {
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 .searchContainer {
@@ -395,22 +348,18 @@ border: none;
   display: none !important;
 }
 
-/* Application Form Styles */
+/* Application Form Styles — centered pop-up dialog */
 .applicationForm {
-  max-width: 33vw;
-  width: 100%;
-  margin: 0 auto;
-  padding: 32px 32px 24px 32px;
+  width: min(440px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px 24px 20px 24px;
   border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.35);
   background: var(--color-2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
-  transform: scaleY(1);
-  opacity: 1;
-  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 
 .applicationForm--closed {
@@ -421,17 +370,18 @@ border: none;
 
 .formHeader {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 6px;
+  width: 100%;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid rgba(var(--color-1-rgb), 0.2);
 }
 
 .formHeader h3 {
   color: var(--color-1);
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.15rem;
 }
 
 .closeButton {
@@ -452,23 +402,30 @@ border: none;
 
 .formFields {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
 .formFields input,
 .formFields select,
 .formFields textarea {
-  flex: 1;
-  min-width: 100px;
-  padding: 8px 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
   border: none;
   outline: none;
   background: var(--color-1);
-  box-shadow: 0 0 10px rgba(6, 0, 0, 0.1);
-  border-radius: 4px;
+  border-radius: 6px;
   font-family: inherit;
+  font-size: 0.95rem;
   resize: vertical;
+}
+
+.formFields input::placeholder,
+.formFields textarea::placeholder {
+  font-size: 0.8rem;
+  opacity: 0.7;
 }
 
 .notesInput {
@@ -486,11 +443,12 @@ border: none;
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
-  padding: 12px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
   background: var(--color-1);
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(6, 0, 0, 0.1);
-  min-height: 48px;
+  border-radius: 6px;
+  min-height: 44px;
 }
 
 .label {
@@ -551,22 +509,24 @@ border: none;
 }
 
 .submitButton {
-  flex: 0 0 auto;
+  width: 100%;
+  margin-top: 4px;
   background: var(--color-1);
   color: var(--color-2);
   border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 12px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 700;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   transition: all 0.2s ease;
 }
 
 .submitButton:hover {
-  background: rgba(var(--color-1-rgb), 0.8);
+  background: rgba(var(--color-1-rgb), 0.85);
   transform: translateY(-1px);
 }
 
@@ -587,13 +547,22 @@ header,
 .mainContainer {
   display: flex;
   gap: 20px;
-  max-width: 1400px;
+  max-width: 1000px;
   width: 100%;
-  margin: 0 auto;
+  margin: 0 auto; /* sidebar + list sit together, centred, with margins at the sides */
+  justify-content: center;
 }
 
 .mainContainer.dragOverReject .rejectionPile {
-  border: 2px dashed #0f0f08;
+  border: 2px solid var(--color-2);
+}
+
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 360px;
+  flex: none;
 }
 
 .main {
@@ -650,8 +619,7 @@ header,
 .applicationsGroup {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  max-width: 900px;
+  gap: 14px;
   width: 100%;
   margin: 0 auto;
 }
@@ -663,7 +631,7 @@ header,
 
 .applicationItem.draggable:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
 }
 
 .applicationItem.draggable:active {
@@ -673,11 +641,11 @@ header,
 .applicationItem {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px;
+  gap: 12px;
+  padding: 13px 14px;
   background: var(--color-2);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
 }
 
 .applicationInfo {
@@ -685,14 +653,14 @@ header,
 }
 
 .applicationInfo h3 {
-  font-size: 1.2rem;
-  margin-bottom: 4px;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
   color: var(--color-1);
 }
 
 .applicationInfo p {
   color: var(--color-1);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .applicationInfo p.source {
@@ -797,38 +765,38 @@ header,
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
-  color: var(--white);
+  color: #fff;
   font-weight: bold;
   cursor: pointer;
 }
 
-/* Status-specific styling */
+/* Status-specific styling — semantic, consistent across all themes */
 .statusSelect.status-applying {
-  background: var(--accent-yellow);
+  background: var(--status-applying);
 }
 
 .statusSelect.status-applied {
-  background: var(--accent-blue);
+  background: var(--status-applied);
 }
 
 .statusSelect.status-awaiting-interview {
-  background: var(--accent-purple);
+  background: var(--status-awaiting-interview);
 }
 
 .statusSelect.status-interviewed {
-  background: var(--accent-cyan);
+  background: var(--status-interviewed);
 }
 
 .statusSelect.status-awaiting-response {
-  background: var(--accent-orange);
+  background: var(--status-awaiting-response);
 }
 
 .statusSelect.status-offer {
-  background: var(--accent-green);
+  background: var(--status-offer);
 }
 
 .statusSelect.status-rejected {
-  background: var(--accent-red);
+  background: var(--status-rejected);
 }
 
 .heardBackContainer {
@@ -856,16 +824,12 @@ header,
 /* Rejection Pile Styles */
 
 .rejectionPile {
-  flex: none;
-  width: 420px;
-  min-width: 320px;
-  max-width: 99vw;
-  height: 480px;
-  max-height: 70vh;
+  width: 100%;
+  margin: 0;
   background: var(--color-1);
-  border: 2px dashed var(--color-2);
+  border: 1px solid var(--color-2);
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px 16px;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -873,14 +837,28 @@ header,
 }
 
 .rejectionHeader {
-  color: var(--color-2);
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-  text-align: center;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--color-2);
+}
+
+.rejectionChevron {
+  margin-left: auto;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.rejectionPile:not(.collapsed) .rejectionHeader {
+  margin-bottom: 14px;
 }
 
 .rejectedApplications {
@@ -888,7 +866,7 @@ header,
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
-  flex: 1 1 auto;
+  max-height: 360px;
   min-height: 0;
 }
 
@@ -945,12 +923,13 @@ header,
 .affirmationsPanel {
   background: var(--color-1);
   color: var(--color-2);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
-  min-width: 260px;
-  max-width: 350px;
-  margin: 0 auto 24px auto;
+  border: 1px solid var(--color-2);
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 16px;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -1086,7 +1065,7 @@ header,
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.35);
-  z-index: 1000;
+  z-index: 1500; /* above the fixed title (1100) and account icon (1200) */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1116,19 +1095,80 @@ header,
 }
 
 .personIconBtn {
-  position: fixed;
-  top: 24px;
-  right: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  z-index: 1100;
-  font-size: 2rem;
+  font-size: 3rem;
   color: var(--color-2);
   cursor: pointer;
   transition: color 0.2s;
+  padding: 0;
 }
 .personIconBtn:hover {
   color: var(--accent-blue-hover);
+}
+
+/* Sidebar header: page title + account menu, top-left of the dashboard */
+/* Top header bar: account menu + title, above the content */
+.appHeader {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-2);
+}
+
+.appTitle {
+  margin: 0;
+  color: var(--color-2);
+}
+
+.appTitle span {
+  font-family: 'Changa One', 'Arial Black', system-ui, sans-serif;
+  font-size: 4rem;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  font-variant: small-caps;
+}
+
+.accountMenuWrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.accountMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--color-1);
+  color: var(--color-2);
+  border: 1px solid var(--color-2);
+  border-radius: 8px;
+  min-width: 160px;
+  z-index: 1300;
+  padding: 0;
+  overflow: hidden;
+}
+
+.accountMenu .moreMenuItem {
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.accountMenu .moreMenuItem:hover {
+  background: color-mix(in srgb, var(--color-2) 10%, transparent);
 }
 
 @media (min-width: 640px) {
@@ -1148,9 +1188,7 @@ header,
   .rejectionPile {
     width: 100%;
     min-width: 0;
-    max-width: 100vw;
-    height: 300px;
-    max-height: 40vh;
+    max-width: 100%;
   }
 }
 
@@ -1158,10 +1196,708 @@ header,
   .mainContainer {
     flex-direction: column;
   }
-  
+
+  .sideColumn {
+    width: 100%;
+  }
+
+  /* Mobile stack order: Add Application + list first, then the panels */
+  .applicationsSection {
+    order: -1;
+  }
+
+  /* Cap the list height and scroll it internally so the panels below
+     stay reachable instead of being pushed way down the page. */
+  .applicationsListScroll {
+    max-height: 60vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Within the side column: Search + Add, then Notes, Calendar, Rejection pile */
+  .sideColumn .searchAddRow {
+    order: -1;
+  }
+
   .affirmationsPanel {
     max-width: none;
     position: static;
-    order: -1;
   }
+}
+
+/* Desktop: applications window fills the viewport height and scrolls
+   internally, instead of letting the list length drive page height. */
+@media (min-width: 1025px) {
+  .applicationsListScroll {
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+}
+/* ── Stats bar (glassy) ───────────────────────────────── */
+.statsBar {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 14px auto 0;
+  max-width: 900px;
+  padding: 0 12px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--stat-accent, var(--color-2)) 10%, color-mix(in srgb, var(--color-1) 60%, transparent));
+  backdrop-filter: blur(16px) saturate(170%);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  border: 1px solid color-mix(in srgb, var(--stat-accent, var(--color-2)) 28%, transparent);
+  box-shadow: 0 6px 28px color-mix(in srgb, var(--color-2) 12%, transparent);
+  color: var(--color-2);
+  min-width: 130px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 34px color-mix(in srgb, var(--color-2) 18%, transparent);
+}
+
+.statIcon {
+  font-size: 1.4rem;
+  color: var(--stat-accent, var(--color-2));
+}
+
+.statText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 600px) {
+  .statCard {
+    min-width: 0;
+    flex: 1 1 calc(50% - 14px);
+    padding: 10px 14px;
+  }
+}
+
+/* ── Stats modal (glassy overlay) ─────────────────────── */
+.statsModal {
+  position: relative;
+  width: min(560px, 92vw);
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 28px 28px 32px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--color-1) 70%, transparent);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--color-2) 16%, transparent);
+  box-shadow: 0 18px 60px color-mix(in srgb, var(--color-2) 28%, transparent);
+  color: var(--color-2);
+}
+
+.statsModalTitle {
+  margin: 0 0 18px;
+  text-align: center;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--color-2);
+}
+
+.statsModal .statsBar {
+  margin-top: 0;
+}
+
+.statsBreakdown {
+  margin-top: 28px;
+}
+
+.statsBreakdownTitle {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  margin: 0 0 14px;
+}
+
+.breakdownRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.breakdownLabel {
+  flex: 0 0 140px;
+  font-size: 0.9rem;
+}
+
+.breakdownTrack {
+  flex: 1 1 auto;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-2) 10%, transparent);
+  overflow: hidden;
+}
+
+.breakdownFill {
+  height: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-2) 55%, transparent);
+  transition: width 0.4s cubic-bezier(.4, 0, .2, 1);
+}
+
+.breakdownCount {
+  flex: 0 0 28px;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.statsEmpty {
+  opacity: 0.6;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .breakdownLabel {
+    flex-basis: 96px;
+    font-size: 0.82rem;
+  }
+}
+
+/* ── Add-application form: responsive ─────────────────── */
+@media (max-width: 600px) {
+  .applicationForm {
+    padding: 20px 16px 16px 16px;
+  }
+
+  /* Stack fields into a single column instead of wrapping awkwardly */
+  .formFields input,
+  .formFields select,
+  .formFields textarea {
+    flex-basis: 100%;
+  }
+
+  .toggleButton {
+    padding: 14px 16px;
+    min-width: 0;
+  }
+}
+
+/* ── Applications section (search + list) ─────────────── */
+.applicationsSection {
+  flex: 0 1 620px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Applications window: bordered, scrollable panel (border matches the other panels) */
+.applicationsWindow {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  border: 1px solid var(--color-2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.applicationsListScroll {
+  overflow-y: auto;
+  padding: 16px 16px 32px;
+}
+
+/* Soft blurred vignette fading the bottom edge / two corners */
+.applicationsWindow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--color-1));
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000);
+  mask-image: linear-gradient(to bottom, transparent, #000);
+}
+
+.sideColumn .searchContainer {
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+}
+
+.sideColumn .searchBar {
+  padding: 0;
+}
+
+.sideColumn .searchInput input {
+  border: 1px solid var(--color-2);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+/* Search bar + compact Add button sharing one row in the side column */
+.searchAddRow {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.searchAddRow .searchContainer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.addApplicationBtn {
+  flex: 0 0 auto;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  background: var(--color-2);
+  color: var(--color-1);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.addApplicationBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ── Links panel ──────────────────────────────────────── */
+.linksPanel {
+  background: var(--color-1);
+  color: var(--color-2);
+  border: 1px solid var(--color-2);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.linksHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.linksHeader h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.linksAddToggle {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-2);
+  color: var(--color-1);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.linksForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.linksForm input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1px solid var(--color-2);
+  border-radius: 6px;
+  background: var(--color-1);
+  color: var(--color-2);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.linksForm input::placeholder {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.linksSubmit {
+  align-self: flex-start;
+  background: var(--color-2);
+  color: var(--color-1);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.linksList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.linkItem {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.linkChip {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--color-2) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-2) 25%, transparent);
+  border-radius: 6px;
+  color: var(--color-2);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.linkChip:hover {
+  background: color-mix(in srgb, var(--color-2) 14%, transparent);
+}
+
+.linkName {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linkCopyHint {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.linkDelete {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: var(--color-2);
+  opacity: 0.55;
+  cursor: pointer;
+  padding: 0 6px;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.linkDelete:hover {
+  opacity: 1;
+  color: var(--status-rejected);
+}
+
+.linksEmpty {
+  font-size: 0.85rem;
+  opacity: 0.65;
+}
+
+/* ── Calendar: day cells, activity dots, day detail ───── */
+.calCell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2px;
+  min-height: 34px;
+  padding: 4px 0 2px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--color-2);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.calCell:hover {
+  background: color-mix(in srgb, var(--color-2) 8%, transparent);
+}
+
+.calCell--empty {
+  cursor: default;
+  border: none;
+}
+
+.calCell--empty:hover {
+  background: none;
+}
+
+.calCell--today {
+  background: var(--color-2);
+  color: var(--color-1);
+  font-weight: bold;
+}
+
+.calCell--selected {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.calDayNum {
+  font-size: 0.9rem;
+  line-height: 1.1;
+}
+
+.calDots {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 6px;
+}
+
+.calDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.calDotMore {
+  font-size: 0.6rem;
+  opacity: 0.7;
+  margin-left: 1px;
+}
+
+.calCell--today .calDotMore {
+  color: var(--color-1);
+}
+
+.calDetail {
+  margin-top: 16px;
+  background: var(--color-1);
+  border: 1px solid var(--color-2);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.calDetailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.calDetailHeader button {
+  background: none;
+  border: none;
+  color: var(--color-2);
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.calDetailHeader button:hover {
+  opacity: 1;
+}
+
+.calDetailEmpty {
+  font-size: 0.85rem;
+  opacity: 0.65;
+  margin: 0;
+}
+
+.calDetailList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calDetailItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.calDetailDot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.calDetailText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.calDetailText strong {
+  font-size: 0.92rem;
+}
+
+.calDetailText span {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+/* Date group highlighted when picked from the calendar */
+.dateGroup--focus {
+  scroll-margin-top: 8px;
+}
+
+.dateGroup--focus .dateHeader {
+  border-radius: 6px;
+  padding: 6px 10px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-bottom-color: transparent;
+  border-left: 4px solid var(--accent);
+}
+
+/* ── Settings modal (account) ─────────────────────────── */
+.settingsModalBox {
+  min-width: 360px;
+  max-width: 92vw;
+  align-items: stretch;
+  text-align: left;
+}
+
+.settingsCurrent {
+  margin: 12px 0 4px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.settingsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--color-2) 18%, transparent);
+}
+
+.settingsSectionTitle {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.settingsInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--color-2);
+  border-radius: 6px;
+  background: var(--color-1);
+  color: var(--color-2);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.settingsInput::placeholder {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.settingsSaveBtn {
+  align-self: flex-start;
+  background: var(--color-2);
+  color: var(--color-1);
+  border: none;
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.settingsSaveBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.settingsSaveBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.settingsMsg {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+}
+
+.settingsMsg.ok {
+  color: var(--status-offer);
+}
+
+.settingsMsg.err {
+  color: var(--accent);
+}
+
+.settingsFeedbackBtn {
+  margin-top: 22px;
+  align-self: flex-start;
+  background: none;
+  border: 1px solid var(--color-2);
+  color: var(--color-2);
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.settingsFeedbackBtn:hover {
+  background: color-mix(in srgb, var(--color-2) 8%, transparent);
 }
